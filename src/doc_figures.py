@@ -16,7 +16,7 @@ IMG = os.path.join(ROOT, "docs", "img")
 # (file, time s): one or more per section, in film order
 FRAMES = [
     ("00_prologue", 3.0), ("01_introit_one", 12.0), ("02_introit_circle", 22.0),
-    ("03_halo_4deg", 40.0), ("04_halo_13", 47.0), ("05_halo_single", 57.2), ("06_halo_ramp", 63.6),
+    ("03_halo_4deg", 40.0), ("04_halo_jumps", 47.0), ("05_halo_single", 57.2), ("06_halo_ramp", 63.6),
     ("07_halo_6k3", 65.6), ("08_dynamica_audio", 73.0), ("09_dynamica_cpx", 80.0), ("10_dynamica_u1", 93.0),
     ("11_scintilla_cell", 110.0), ("12_scintilla_hours", 118.0), ("13_apertvm_layers", 129.0),
     ("14_apertvm_panel", 132.4), ("15_apertvm_field", 140.0), ("16_apertvm_blaze", 148.5),

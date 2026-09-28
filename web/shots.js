@@ -35,7 +35,7 @@ export function makeShots(tl, leds, casePose) {
   // rise out of the landscape and land face-on on the HALO downbeat
   key(sec.halo.t0, [0, -2, 76], [0, 0, 0.5], 30);
 
-  // II · HALO: slow orbit around the +13 star, in on "una sola", out on "omnes lucent"
+  // II · HALO: slow orbit around the star of jumps, in on "una sola", out on "omnes lucent"
   key(halo[1].t0, [7, 2, 71], [0, 0, 0.5], 30);
   key(halo[2].t0, [11, 3, 67], [0, 0.5, 0.5], 30);
   key(leds.refrain.t0, [-7, 1, 62], [0, 0, 0.5], 30);

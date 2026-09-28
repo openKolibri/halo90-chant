@@ -1,10 +1,12 @@
 // Perceived brightness of the 90 LEDs at time t. The hardware lights one LED at a time; the eye
 // integrates. Every pattern is the firmware's, placed on the timeline (sections, lines, marks).
 // Index = physical slot around the ring (4 degrees apart, slot 0 at the bottom); firmware index i is
-// slot i + 1 (D(i+1)), so "+13" is 13 positions round the ring: 13 and 90 are coprime, so 90 steps
-// visit every LED exactly once. The refrain's scan and the audio mode are simulated as the device
+// slot i + 1 (D(i+1)). The Halo scan jumps JUMP = 13 positions round the ring (52 degrees), as the firmware's
+// setLed((prevLed + 13) % 90); 13 and 90 are coprime, so 90 steps visit every LED exactly once. The refrain's scan and the audio mode are simulated as the device
 // runs them: what the eye sees is each LED's share of its ~50 ms (duty), perceived as duty^0.3.
 import {clamp, hash, lowerBound, smooth} from './timeline.js';
+
+export const JUMP = 13;
 
 export function makeLeds(tl, board) {
   const leds = board.leds;                          // sorted by physical slot (see film.js)
@@ -31,32 +33,36 @@ export function makeLeds(tl, board) {
     return p;
   };
 
-  // Halo scan: one +13 step per sung syllable, then one per bell
+  // Halo scan: one JUMP step per sung syllable, then one per bell
+  // (the step times are merged and sorted first, then the LEDs assigned in time order, so every consecutive
+  // step, and so every arc, is exactly +JUMP)
   const scan = [];
   {
+    const times = [];
+    for (const L of halo.slice(0, -1)) for (const s of L.syls) times.push(s.t0);
+    for (const e of tl.events.bells) if (e.t < refrain.t0) times.push(e.t);
+    times.sort((a, b) => a - b);
     let led = 0;
-    for (const L of halo.slice(0, -1)) for (const s of L.syls) { scan.push({t: s.t0, led}); led = (led + 13) % 90; }
-    for (const e of tl.events.bells) if (e.t < refrain.t0) { scan.push({t: e.t, led}); led = (led + 13) % 90; }
-    scan.sort((a, b) => a.t - b.t);
+    for (const t of times) { scan.push({t, led}); led = (led + JUMP) % 90; }
   }
   const scanEnd = scan.length ? scan[scan.length - 1].led : 0;
 
-  // The refrain: one +13 step per beat; from "omnes" the step rate climbs exponentially to the device's
+  // The refrain: one JUMP step per beat; from "omnes" the step rate climbs exponentially to the device's
   // own Halo rate, the RTC wake-up every (2 + 1) / (38 kHz LSI / 2) = 158 us, i.e. 6.3 kHz: each LED 70
   // times a second, past flicker fusion, so the ring settles into the even glow of 1/90 duty.
   const accT0 = omnes.t0, accT1 = refrain.t1 - 0.8, KHZ = 38000 / 2 / 3;
   const beatLen = tl.beats.length > 1 ? tl.beats[1] - tl.beats[0] : 0.75;
   const accR0 = 1 / beatLen, accK = Math.log(KHZ / accR0) / Math.max(0.5, accT1 - accT0);
   const scanRate = t => t < accT0 ? accR0 : accR0 * Math.exp(accK * (Math.min(t, accT1) - accT0));
-  const steps = [{t: refrain.t0 - 1, led: (scanEnd + 13) % 90}];
+  const steps = [{t: refrain.t0 - 1, led: (scanEnd + JUMP) % 90}];
   {
     let led = steps[0].led;
-    for (const b of tl.beats) if (b >= refrain.t0 - 1e-6 && b <= accT0 + 1e-6) { led = (led + 13) % 90; steps.push({t: b, led}); }
+    for (const b of tl.beats) if (b >= refrain.t0 - 1e-6 && b <= accT0 + 1e-6) { led = (led + JUMP) % 90; steps.push({t: b, led}); }
     const phiEnd = (KHZ - accR0) / accK;
     for (let n = 1; ; n++) {
       const t = n <= phiEnd ? accT0 + Math.log(1 + n * accK / accR0) / accK : accT1 + (n - phiEnd) / KHZ;
       if (t > S0('halo').t1 + 0.6) break;
-      led = (led + 13) % 90; steps.push({t, led});
+      led = (led + JUMP) % 90; steps.push({t, led});
     }
   }
   const scanDuty = t => {                            // each LED's share of the eye's last 50 ms
@@ -150,7 +156,7 @@ export function makeLeds(tl, board) {
         L[i] = Math.max(L[i], v * fade);
       }
     }
-    // halo: all of them flash on the downbeat, then the +13 star, then one alone, then all glow
+    // halo: all of them flash on the downbeat, then the JUMP star, then one alone, then all glow
     const h = S('halo');
     if (t >= h.t0 - 0.05 && t < h.t0 + 1.5) allOn(L, Math.exp(-(t - h.t0 + 0.05) / 0.5));
     if (t >= h.t0 && t < refrain.t0 + 0.3) persist(L, scan, t, t < halo[Math.min(2, halo.length - 1)].t0 ? 0.9 : 0.45);
@@ -195,12 +201,12 @@ export function makeLeds(tl, board) {
   }
 
   // other boards in the field: forks of the firmware
-  const FORKS = ['+13', '+1', '+7', 'rand()%15', 'breathe', 'adc', '±1', '+29', '+45', '0b…'];
+  const FORKS = [`+${JUMP}`, '+1', '+7', 'rand()%15', 'breathe', 'adc', '±1', '+29', '+45', '0b…'];
   function fork(kind, t, seed) {
     const L = new Float32Array(90);
     const ph = hash(seed) * 10;
     switch (kind) {
-      case '+13': L.fill(0.85); break;   // at persistence-of-vision speed the ring simply glows
+      case `+${JUMP}`: L.fill(0.85); break;   // at persistence-of-vision speed the ring simply glows
       case '+1': case '±1': {
         let head = (t * 30 + ph * 9) % 90;
         if (kind === '±1') { const q = (t * 22 / 90 + ph) % 2; head = (q < 1 ? q : 2 - q) * 89; }
@@ -221,5 +227,5 @@ export function makeLeds(tl, board) {
   }
 
   return {levels, wake, fork, FORKS, fwOfSlot, slotOf, introLed, INTRO_SLOT, scan, refrain, accT0, accT1, scanEnd,
-    scanRate, lineA, lineB, currentSingle, adcLed, drive};
+    scanRate, lineA, lineB, currentSingle, adcLed, drive, JUMP};
 }

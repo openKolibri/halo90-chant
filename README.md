@@ -46,15 +46,17 @@ them shine.
 
 <table><tr>
 <td><img src="docs/img/frames/03_halo_4deg.jpg" alt="4 degrees apart"></td>
-<td><img src="docs/img/frames/04_halo_13.jpg" alt="+13"></td>
+<td><img src="docs/img/frames/04_halo_jumps.jpg" alt="the jumps as arcs"></td>
 </tr><tr>
 <td><img src="docs/img/frames/05_halo_single.jpg" alt="the only one on"></td>
 <td><img src="docs/img/frames/06_halo_ramp.jpg" alt="scan ramp"></td>
 </tr></table>
 
-`setLed((prevLed + 13) % 90)`. Because 13 and 90 are coprime, the scan visits all ninety before repeating,
-drawn as arcs over the components. In the refrain it steps once per beat, then accelerates to the device's
-own 6.3 kHz, and the ring fades into the even glow persistence of vision makes of it.
+`setLed((prevLed + 13) % 90)`. Because 13 and 90 share no factor, the scan visits all ninety before
+repeating. Each jump is drawn as an arc that bows in over the board, and since 7 × 13 = 91, every seven jumps
+land one LED on: a seven-petal flower that slowly turns. In the refrain it steps once per beat, then
+accelerates to the device's own 6.3 kHz, and the ring fades into the even glow persistence of vision makes
+of it.
 
 <p align="center"><img src="docs/img/refrain_ramp.gif" alt="the refrain: one step per beat to 6.3 kHz" width="420"></p>
 
@@ -182,7 +184,7 @@ flowchart LR
   W --> O["1080p film"]
 ```
 
-- **Score.** Tempo, chords, Latin and the event streams all come from the firmware: the +13 scan, the
+- **Score.** Tempo, chords, Latin and the event streams all come from the firmware: the Halo scan, the
   sparkle's `rand() % 15`, the boot sweep.
 - **Voice.** macOS `say`, re-pitched syllable by syllable into chant (WORLD vocoder), with strings, taiko
   and an 8-bit voice.

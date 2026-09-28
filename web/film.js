@@ -117,7 +117,7 @@ async function init() {
     fetch('/build/board.json').then(r => r.json()),
   ]);
   boardData.outlineChain = chainOutline(boardData.outline);
-  // index LEDs by physical slot (4 degrees apart, slot 0 at the bottom): +13 means 13 positions round the ring
+  // index LEDs by physical slot (4 degrees apart, slot 0 at the bottom): +JUMP means JUMP positions round the ring
   const slotOfLed = l => Math.round((((94 - l.ang) % 360) + 360) % 360 / 4) % 90;
   boardData.leds.sort((a, b) => slotOfLed(a) - slotOfLed(b));
   const tl = new Timeline(tlJson);

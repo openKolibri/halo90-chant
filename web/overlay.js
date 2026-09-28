@@ -60,8 +60,9 @@ export function makeOverlay(tl, leds) {
       }
       g.letterSpacing = '0px';
       label(g, W / 2, y + 52, Ln.en, 0.62 * a, {font: FONT.ital, italic: true, size: 26, align: 'center'});
-      const tech = typed(Ln.tech, t - Ln.t0 + 0.2, 38);
-      const caret = Math.floor(t * 2.5) % 2 && tech.length < Ln.tech.length ? '▌' : ' ';
+      const techText = Ln.tech.replace('prevLed + 13)', `prevLed + ${leds.JUMP})`);   // the animation's jump
+      const tech = typed(techText, t - Ln.t0 + 0.2, 38);
+      const caret = Math.floor(t * 2.5) % 2 && tech.length < techText.length ? '▌' : ' ';
       label(g, W / 2, y + 96, tech + caret, 0.9 * a, {size: 22, align: 'center', color: COL.gold});
     });
   }
@@ -177,7 +178,8 @@ export function makeOverlay(tl, leds) {
       if (a > 0) {
         const i = lowerBound(leds.scan, t + 1e-9) - 1;
         const cur = leds.scan[Math.max(0, i)].led, prev = leds.scan[Math.max(0, i - 1)].led;
-        label(g, W / 2, 105, `prevLed = ${String(prev).padStart(2)}   →   setLed(${String(cur).padStart(2)})   ·   ${leds.board.leds[cur].ref}`, 0.8 * a, {size: 24, align: 'center', color: COL.gold});
+        const fw = slot => (slot + 89) % 90;                        // firmware index i lights D(i+1) = slot i+1
+        label(g, W / 2, 105, `prevLed = ${String(fw(prev)).padStart(2)}   →   setLed(${String(fw(cur)).padStart(2)})   ·   ${leds.board.leds[cur].ref}`, 0.8 * a, {size: 24, align: 'center', color: COL.gold});
       }
       const r = leds.refrain;
       const sa = win(t, r.t0 + 0.3, leds.accT0, 0.4, 0.3);
@@ -223,7 +225,7 @@ export function makeOverlay(tl, leds) {
       const m = ol[2];
       const fa = win(t, m.t0 + 0.2, m.t1 + 0.2, 0.4, 0.4);
       if (fa > 0) {
-        const nums = ['13', '7', '29', '1', '45'];
+        const nums = [String(leds.JUMP), '7', '29', '1', '45'];
         const span = (m.t1 - m.t0) / nums.length;
         const k = Math.floor((t - m.t0) / span) % nums.length, within = ((t - m.t0) % span) / span;
         let n = nums[Math.max(0, k)];

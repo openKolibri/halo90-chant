@@ -86,7 +86,7 @@ a faint eight-spoke pattern. It is kept; the real board shows much the same.
 | mode | firmware | in the film |
 |---|---|---|
 | boot | `setLed(debounce / 200)` while the button is held | one revolution in about a second, in the prologue and again inside the closed case at the end |
-| Halo | `setLed((prevLed + 13) % 90)` on the RTC wake-up | 13 and 90 are coprime, so all 90 are visited once per cycle and every LED gets the same share. Early on, one step per sung syllable, drawn as arcs over the components. |
+| Halo | `setLed((prevLed + 13) % 90)` on the RTC wake-up | 13 and 90 are coprime, so all 90 are visited once per cycle and every LED gets the same share (`JUMP` in `web/leds.js`). Early on, one step per sung syllable. Each jump is an arc (`fx.js`): a quadratic Bézier that bows in over the board, lifted ~4 mm clear of the parts, so it reads as a curve from any angle. Since 7 × 13 = 91, every seven jumps land one LED on, so the arcs form a seven-petal flower that slowly turns. |
 | Halo, refrain | same | one step per beat until "omnes", then an exponential ramp to the device's own rate: RTC wake-up every (2 + 1) / (38 kHz LSI / 2) ≈ 158 µs, i.e. **6.3 kHz**. There each LED lights 70 times a second, past flicker fusion, and the ring fades over a second into the even 1/90 glow. |
 | audio | `setLed((4140 + rotationCenter + adc) % 90)` on every ADC conversion | the soundtrack through a mic model at ADC rate (see below). `rotationCenter++` every 40 ms (TIM2: 16 MHz / 2⁷ / 5000), so the cluster circles the ring once every 3.6 s. |
 | sparkle | `rand() % 15 ? ledLow(prevLed) : setLed(rand() % 90)` | brief random flashes |

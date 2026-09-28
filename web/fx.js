@@ -37,19 +37,23 @@ export function makeFx(scene, rig, boardData, tl, leds, width = 1920, height = 1
   const byRef = Object.fromEntries(rig.leds.map(l => [l.ref, l]));
   const fwPos = boardData.leds.map(l => byRef[l.ref].pos.clone());   // board-local, indexed by firmware LED
 
-  // ---- string art: each +13 jump is an arc that leaps over the board, lens to lens ---------------
-  // 13 slots = 52 degrees, a 9.6 mm chord near the rim; the arc peaks ~4 mm up, well clear of the
-  // tallest part (the mic can, 2.0 mm) and of the LEDs it passes over.
-  const MAXC = 90, ARC = 16;
-  const lensZ = 1.42;
+  // ---- string art: each jump is an arc that leaps over the board, lens to lens ---------------------
+  // A 3D curve: it bows in over the board (a quadratic Bezier whose apex sits nearer the centre), so it
+  // reads as an arc even face-on, and it lifts clear of the parts (a 52-degree jump is a 10.3 mm chord;
+  // the arc peaks ~4 mm up, well clear of the tallest part, the 2.0 mm mic can, and the LEDs it passes).
+  const MAXC = 90, ARC = 24;
+  const lensZ = 1.42, BOW = 0.45;                 // apex pulled 45% of the way from the chord's middle to the centre
   const chordPos = new Float32Array(MAXC * ARC * 6), chordCol = new Float32Array(MAXC * ARC * 6);
   fx.chords = segs(chordPos, chordCol, lineMat({width: 2.0}));
   board.add(fx.chords);
   fx.arcHeight = d => 1.0 + 0.3 * d;
   const arcPoint = (a, b, s, out) => {
     const d = Math.hypot(b.x - a.x, b.y - a.y);
-    out[0] = a.x + (b.x - a.x) * s;
-    out[1] = a.y + (b.y - a.y) * s;
+    const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+    const cx = mx * (1 - 2 * BOW), cy = my * (1 - 2 * BOW);       // control point: apex at mid * (1 - BOW)
+    const u = 1 - s;
+    out[0] = u * u * a.x + 2 * u * s * cx + s * s * b.x;
+    out[1] = u * u * a.y + 2 * u * s * cy + s * s * b.y;
     out[2] = lensZ + fx.arcHeight(d) * 4 * s * (1 - s);
     return out;
   };
