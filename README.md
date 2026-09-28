@@ -8,11 +8,14 @@ way the device runs them. It is one continuous camera move, three minutes long.
 
 ![NONAGINTA](docs/img/frames/07_halo_6k3.jpg)
 
-**1920 × 1080 · 30 fps · 2:57 · −14 LUFS** · [lyrics](out/LYRICS.md) · [subtitles](out/HALO-90_NONAGINTA.srt) ·
-[technical notes](docs/TECHNICAL.md)
+**▶ [Watch: `out/HALO-90_NONAGINTA_web.mp4`](out/HALO-90_NONAGINTA_web.mp4)** · 1920 × 1080 · 30 fps · 2:57 · −14 LUFS
 
-> The rendered film is 936 MB, so it isn't stored in git. Build it with `node src/build_film.js`
-> ([Build](#build)); a 1080p render takes about 19 minutes on an M3.
+[lyrics](out/LYRICS.md) · subtitles: [Latin + English](out/HALO-90_NONAGINTA.srt),
+[Latin](out/HALO-90_NONAGINTA.la.srt), [English](out/HALO-90_NONAGINTA.en.srt) ·
+[YouTube title and description](out/YOUTUBE.md) · [technical notes](docs/TECHNICAL.md)
+
+> The web copy is a two-pass H.264 encode under 100 MB. The full-quality master (~1 GB) isn't stored in
+> git; build it with `node src/build_film.js` ([Build](#build)). A 1080p render takes about 19 minutes on an M3.
 
 ![the whole film, one frame every 6 s](docs/img/film_contact.jpg)
 
@@ -212,6 +215,19 @@ The renderer guards memory: it won't start below 25% free and kills Chrome below
 
 ## Credits
 
-- **HALO-90:** [openKolibri/halo-90](https://github.com/openKolibri/halo-90). Hardware CERN-OHL-S 2.0,
-  firmware GPL-3.0, docs CC BY-SA 4.0. The photos above come from its docs.
+- **HALO-90:** [openKolibri/halo-90](https://github.com/openKolibri/halo-90), designed by Sawaiz Syed for Kolibri.
+  Hardware CERN-OHL-S 2.0, firmware GPL-3.0, docs CC BY-SA 4.0. The photos above come from its docs.
 - **Film and music:** generated from that repository with the code here.
+
+## Licence
+
+Matching HALO-90:
+
+| what | licence |
+|---|---|
+| code: `src/`, `web/`, `legacy/` | [GNU GPL 3.0](LICENSE) |
+| the film, soundtrack, lyrics, subtitles, cue sheets, docs and images: `out/`, `cues/`, `docs/`, this README | [CC BY-SA 4.0](LICENSE-CC-BY-SA-4.0) |
+
+The photos in `docs/img/photos` are from the HALO-90 docs (CC BY-SA 4.0). As in HALO-90, the Kolibri name and
+bird and the designer and copyright notices that appear on the board are Kolibri's protected IP, not covered
+by these licences.

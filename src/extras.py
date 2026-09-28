@@ -15,10 +15,15 @@ def ts(x):
 
 
 lines = expand_lines()
-with open(os.path.join(OUT, "HALO-90_NONAGINTA.srt"), "w") as f:
-    for i, L in enumerate(lines, 1):
-        end = min(L["t1"] + 0.8, lines[i]["t0"] - 0.35) if i < len(lines) else L["t1"] + 1.5
-        f.write(f"{i}\n{ts(max(0, L['t0'] - 0.3))} --> {ts(end)}\n{L['latin'].upper()}\n{L['en']}\n\n")
+# three tracks: Latin + English together, and one per language for YouTube's caption menu (la, en)
+tracks = {"HALO-90_NONAGINTA.srt": lambda L: f"{L['latin'].upper()}\n{L['en']}",
+          "HALO-90_NONAGINTA.la.srt": lambda L: L["latin"],
+          "HALO-90_NONAGINTA.en.srt": lambda L: L["en"]}
+for name, text in tracks.items():
+    with open(os.path.join(OUT, name), "w") as f:
+        for i, L in enumerate(lines, 1):
+            end = min(L["t1"] + 0.8, lines[i]["t0"] - 0.35) if i < len(lines) else L["t1"] + 1.5
+            f.write(f"{i}\n{ts(max(0, L['t0'] - 0.3))} --> {ts(end)}\n{text(L)}\n\n")
 
 md = ["# NONAGINTA — a canticle for ninety lights", "",
       "*A chant for the HALO-90 open-hardware earring, in six parts. "

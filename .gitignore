@@ -3,6 +3,7 @@ node_modules/
 build/
 __pycache__/
 .DS_Store
-# rendered media: the film is ~1 GB; rebuild it (see README) or get it from the release
+# rendered media: the ~1 GB master is rebuilt locally (see README); only the <100 MB web copy is committed
 out/*.mp4
 out/*.wav
+!out/HALO-90_NONAGINTA_web.mp4

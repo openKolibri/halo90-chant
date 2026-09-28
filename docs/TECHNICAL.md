@@ -150,7 +150,10 @@ src/export_models.sh                                    # KiCad GLB + case STEP 
 RES=480 SEGDIR=build/seg480 node src/build_film.js out/HALO-90_NONAGINTA_480p.mp4   # quick preview
 RES=1080 node src/build_film.js out/HALO-90_NONAGINTA_1080p.mp4                    # ~19 min on an M3
 .venv/bin/python src/qa_continuity.py out/HALO-90_NONAGINTA_1080p.mp4             # flags unexplained jumps
-python3 src/extras.py                                                              # subtitles + lyric sheet
+python3 src/extras.py                                                              # subtitles (3 tracks) + lyric sheet
+# web copy under 100 MB: two-pass H.264, 3.7 Mbit/s video + 160k AAC
+ffmpeg -i out/HALO-90_NONAGINTA_1080p.mp4 -c:v libx264 -preset slow -tune film -b:v 3700k -maxrate 7000k -bufsize 10000k -g 60 -pass 1 -an -f mp4 /dev/null
+ffmpeg -i out/HALO-90_NONAGINTA_1080p.mp4 -c:v libx264 -preset slow -tune film -b:v 3700k -maxrate 7000k -bufsize 10000k -g 60 -pass 2 -c:a aac -b:a 160k -movflags +faststart out/HALO-90_NONAGINTA_web.mp4
 .venv/bin/python src/doc_figures.py out/HALO-90_NONAGINTA_1080p.mp4               # the images in docs/img
 ```
 
@@ -204,5 +207,6 @@ commit the film was built from; `src/parse_pcb.py`, `src/export_models.sh` and `
 | `src/render3d.js` · `src/build_film.js` | headless-Chrome frame capture (memory-guarded), chunked render, mux |
 | `src/qa_continuity.py` · `src/qa_los.js` · `src/evals.js` · `src/ab_test.js` · `src/boot_test.js` | QA |
 | `src/doc_figures.py` · `src/contact_sheet.py` | the images in `docs/img` |
-| `out/LYRICS.md` · `out/HALO-90_NONAGINTA.srt` · `out/SUNO.md` | lyric sheet, subtitles, Suno prompt |
+| `out/HALO-90_NONAGINTA_web.mp4` | the film, two-pass H.264 under 100 MB (the ~1 GB master stays out of git) |
+| `out/LYRICS.md` · `out/*.srt` · `out/SUNO.md` · `out/YOUTUBE.md` | lyric sheet; subtitles (Latin + English, Latin, English); Suno prompt; YouTube title, description and tags |
 | `legacy/` | the first, 2D version of the film |
