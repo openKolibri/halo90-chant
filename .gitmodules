@@ -1,0 +1,3 @@
+[submodule "vendor/halo-90"]
+	path = vendor/halo-90
+	url = https://github.com/openKolibri/halo-90.git

@@ -1,0 +1,8 @@
+node_modules/
+.venv/
+build/
+__pycache__/
+.DS_Store
+# rendered media: the film is ~1 GB; rebuild it (see README) or get it from the release
+out/*.mp4
+out/*.wav

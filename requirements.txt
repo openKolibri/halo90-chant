@@ -1,0 +1,7 @@
+numpy
+scipy
+soundfile
+pyworld
+setuptools<80
+pyloudnorm
+pillow

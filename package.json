@@ -1,0 +1,16 @@
+{
+  "name": "halo90-music-video",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NONAGINTA — a canticle for ninety lights. Generated three.js music video for HALO-90.",
+  "scripts": {
+    "assets": "src/export_models.sh",
+    "film": "node src/build_film.js",
+    "still": "node src/render3d.js --still"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^1.0.9",
+    "puppeteer-core": "^25.12.0",
+    "three": "^0.186.1"
+  }
+}
